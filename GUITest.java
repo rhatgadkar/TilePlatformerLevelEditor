@@ -1,4 +1,3 @@
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
@@ -10,6 +9,7 @@ import javax.swing.JPanel;
 // for 640x480: num_rows = 20  num_cols = 20
 // mouse click a grid fill a color in it, right click deletes the color
 // color palette on right side to choose color
+// TODO: add gridlines on display
 
 public class GUITest extends JPanel {
 	
@@ -18,20 +18,17 @@ public class GUITest extends JPanel {
 	public final static int HEIGHT = 600;
 	public final static int WIDTH = 800;
 	
-	private Palette m_palette;
-	private Display m_display;
-	
 	public GUITest() {
-		setLayout(new BorderLayout());
+		setLayout(null);
 		
-		m_palette = new Palette();
-		m_display = new Display(m_palette);
+		Palette palette = new Palette();
+		Display display = new Display(palette);
 		
-		m_display.setBounds(0, 0, Display.WIDTH, Display.HEIGHT);
-		m_palette.getComboBox().setBounds(660, 100, 100, 100);
+		display.setBounds(0, 0, Display.WIDTH, Display.HEIGHT);
+		palette.getComboBox().setBounds(660, 100, 100, 100);
 		
-		add(m_palette.getComboBox());
-		add(m_display);
+		add(palette.getComboBox());
+		add(display);
 	}
 
 	public static void main(String[] args) {
