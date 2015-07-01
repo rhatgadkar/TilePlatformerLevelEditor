@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 // for 640x480: num_rows = 20  num_cols = 20
 // mouse click a grid fill a color in it, right click deletes the color
 // color palette on right side to choose color
-// TODO: add gridlines on display
+// gridlines on display
 
 public class GUITest extends JPanel {
 	

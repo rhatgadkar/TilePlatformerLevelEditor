@@ -70,6 +70,13 @@ class Display extends JPanel implements MouseListener {
 				}
 			}
 		}
+		
+		// draw grid lines
+		g.setColor(Color.WHITE);
+		for (int x = Board.Tile.WIDTH; x < Display.WIDTH; x += Board.Tile.WIDTH)
+			g.drawLine(x, 0, x, Display.HEIGHT);
+		for (int y = Board.Tile.HEIGHT; y < Display.HEIGHT; y += Board.Tile.HEIGHT)
+			g.drawLine(0, y, Display.WIDTH, y);
 	}
 	
 	public void mouseClicked(MouseEvent e) { }		
