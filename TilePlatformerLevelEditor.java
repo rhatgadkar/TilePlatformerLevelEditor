@@ -12,14 +12,14 @@ import javax.swing.JPanel;
 // color palette on right side to choose color
 // gridlines on display
 
-public class GUITest extends JPanel {
+public class TilePlatformerLevelEditor extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
 	public final static int HEIGHT = 600;
 	public final static int WIDTH = 800;
 	
-	public GUITest() {
+	public TilePlatformerLevelEditor() {
 		setLayout(null);
 		
 		Palette palette = new Palette();
@@ -47,7 +47,7 @@ public class GUITest extends JPanel {
 
 	public static void main(String[] args) {
 		JFrame window = new JFrame("GUI Test");
-		GUITest gui = new GUITest();
+		TilePlatformerLevelEditor gui = new TilePlatformerLevelEditor();
 		window.setContentPane(gui);
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
