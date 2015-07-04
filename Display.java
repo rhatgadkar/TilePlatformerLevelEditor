@@ -139,7 +139,7 @@ class Display extends JPanel implements MouseListener {
 		
 		private boolean deleteTile(int r, int c) {
 			Tile tile = findTile(r, c);
-			if (tile != null)
+			if (tile == null)
 				return false;
 			
 			return m_tiles.get(r).remove(tile);
