@@ -3,6 +3,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
@@ -15,23 +17,28 @@ class Display extends JPanel implements MouseListener {
 	
 	private Board m_board;
 	private Palette m_palette;
+	private WidthBox m_widthBox;
 	
-	Display(Palette palette) {
+	Display(Palette palette, WidthBox widthBox) {
 		addMouseListener(this);
 		m_board = new Board();
 		m_palette = palette;
+		m_widthBox = widthBox;
 		repaint();
 	}
 	
 	private void doClickSquare(int row, int col) {
-		boolean fillTile = m_board.fillTile(row, col);
-		if (fillTile)
+		Palette.FillColor color = m_palette.getSelectedColor();
+		int width = m_widthBox.getSelectedWidth();
+		
+		boolean addTile = m_board.addTile(row, col, color, width);
+		if (addTile)
 			repaint();
 	}
 	
 	private void doRightClickSquare(int row, int col) {
-		boolean emptyTile = m_board.emptyTile(row, col);
-		if (emptyTile)
+		boolean deleteTile = m_board.deleteTile(row, col);
+		if (deleteTile)
 			repaint();
 	}
 	
@@ -51,30 +58,33 @@ class Display extends JPanel implements MouseListener {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, Display.WIDTH, Display.HEIGHT);
 		
-		for (int r = 0; r < Board.ROWS; r++) {
-			for (int c = 0; c < Board.COLS; c++) {
-				if (m_board.isFilled(r, c)) {
-					Palette.FillColor color = m_board.getTileColor(r, c);
-					switch (color) {
-					case GREEN:
-						g.setColor(Color.GREEN);
-						break;
-					case RED:
-						g.setColor(Color.RED);
-						break;
-					case YELLOW:
-						g.setColor(Color.YELLOW);
-						break;
-					}
-					g.fillRect(c * Board.Tile.WIDTH, r * Board.Tile.HEIGHT, 
-							   Board.Tile.WIDTH, Board.Tile.HEIGHT);
-					
-					// draw row, col
-					g.setColor(Color.BLACK);
-					Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
-					g.setFont(font);
-					g.drawString(r + "," + c, c * Board.Tile.WIDTH + 1, r * Board.Tile.HEIGHT + (Board.Tile.HEIGHT / 2));
+		for (int tileRow = 0; tileRow < Board.ROWS; tileRow++) {
+			for (Board.Tile tile : m_board.getTilesAtRow(tileRow)) {
+				switch (tile.m_color) {
+				case GREEN:
+					g.setColor(Color.GREEN);
+					break;
+				case RED:
+					g.setColor(Color.RED);
+					break;
+				case YELLOW:
+					g.setColor(Color.YELLOW);
+					break;
 				}
+				
+				//int tileHeight = tile.m_height;
+				int tileWidth = tile.m_width;
+				int tileCol = tile.m_col;
+					
+				int tileX = tileCol * Board.Tile.WIDTH;
+				int tileY = tileRow * Board.Tile.HEIGHT;
+				g.fillRect(tileX, tileY, Board.Tile.WIDTH * tileWidth, Board.Tile.HEIGHT /** tileHeight*/);
+				
+				// draw row, col label string
+				g.setColor(Color.BLACK);
+				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
+				g.setFont(font);
+				g.drawString(tileRow + "," + tileCol, tileX + 1, tileY + (Board.Tile.HEIGHT / 2));
 			}
 		}
 		
@@ -96,45 +106,43 @@ class Display extends JPanel implements MouseListener {
 		public final static int ROWS = Display.HEIGHT / Board.Tile.HEIGHT;
 		public final static int COLS = Display.WIDTH / Board.Tile.WIDTH;
 		
-		private Tile[][] m_tiles;
+		private ArrayList< LinkedList<Tile> > m_tiles;
 		
 		private Board() {
-			m_tiles = new Tile[Board.ROWS][Board.COLS];
-			
-			for (int r = 0; r < Board.ROWS; r++) {
-				for (int c = 0; c < Board.COLS; c++)
-					m_tiles[r][c] = new Tile(r, c);
+			m_tiles = new ArrayList< LinkedList<Tile> >(ROWS);
+			for (int r = 0; r < ROWS; r++)
+				m_tiles.add(new LinkedList<Tile>());
+		}
+		
+		private LinkedList<Tile> getTilesAtRow(int r) {
+			return m_tiles.get(r);
+		}
+		
+		private Tile findTile(int r, int c) {
+			for (Tile tile : m_tiles.get(r)) {
+				if (tile.m_col == c)
+					return tile;
 			}
+			
+			return null;
 		}
 		
-		private boolean fillTile(int r, int c) {
-			if (m_tiles[r][c].m_fill) // only fill if not already filled
+		private boolean addTile(int r, int c, Palette.FillColor color, int width) {
+			// check if another tile exists in region
+			Tile tile = findTile(r, c);
+			if (tile != null)
 				return false;
 			
-			m_tiles[r][c].m_fill = true; 
-			m_tiles[r][c].m_color = m_palette.getSelectedColor(); // color = whatever is selected on palette
-			
+			m_tiles.get(r).add(new Board.Tile(c, color, width));
 			return true;
 		}
 		
-		private Palette.FillColor getTileColor(int r, int c) {
-			return m_tiles[r][c].m_color;
-		}
-		
-		private boolean emptyTile(int r, int c) {
-			if (!m_tiles[r][c].m_fill) // only empty if not already empty
+		private boolean deleteTile(int r, int c) {
+			Tile tile = findTile(r, c);
+			if (tile != null)
 				return false;
 			
-			m_tiles[r][c].m_fill = false; 
-			
-			return true;
-		}
-		
-		private boolean isFilled(int r, int c) {
-			if (m_tiles[r][c].m_fill)
-				return true;
-			
-			return false;
+			return m_tiles.get(r).remove(tile);
 		}
 		
 		final class Tile {
@@ -142,13 +150,14 @@ class Display extends JPanel implements MouseListener {
 			public final static int WIDTH = 32;
 			public final static int HEIGHT = 24;
 			
-			private boolean m_fill;
-			
 			private Palette.FillColor m_color;
+			private int m_width;
+			private int m_col;
 			
-			private Tile(int row, int col) {
-				m_fill = false;
-				m_color = Palette.FillColor.GREEN; // default color
+			private Tile(int col, Palette.FillColor color, int width) {
+				m_col = col;
+				m_color = color;
+				m_width = width;
 			}
 		}
 	}

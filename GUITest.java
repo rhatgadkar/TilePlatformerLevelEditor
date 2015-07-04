@@ -22,11 +22,14 @@ public class GUITest extends JPanel {
 		setLayout(null);
 		
 		Palette palette = new Palette();
-		Display display = new Display(palette);
+		WidthBox widthBox = new WidthBox();
+		Display display = new Display(palette, widthBox);
 		
 		display.setBounds(0, 0, Display.WIDTH, Display.HEIGHT);
-		palette.getComboBox().setBounds(660, 100, 100, 100);
+		palette.getComboBox().setBounds(660, 100, 100, 50);
+		widthBox.getComboBox().setBounds(660, 300, 50, 50);
 		
+		add(widthBox.getComboBox());
 		add(palette.getComboBox());
 		add(display);
 	}
