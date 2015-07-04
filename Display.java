@@ -18,20 +18,23 @@ class Display extends JPanel implements MouseListener {
 	private Board m_board;
 	private Palette m_palette;
 	private WidthBox m_widthBox;
+	private HeightBox m_heightBox;
 	
-	Display(Palette palette, WidthBox widthBox) {
+	Display(Palette palette, WidthBox widthBox, HeightBox heightBox) {
 		addMouseListener(this);
 		m_board = new Board();
 		m_palette = palette;
 		m_widthBox = widthBox;
+		m_heightBox = heightBox;
 		repaint();
 	}
 	
 	private void doClickSquare(int row, int col) {
 		Palette.FillColor color = m_palette.getSelectedColor();
 		int width = m_widthBox.getSelectedWidth();
+		int height = m_heightBox.getSelectedHeight();
 		
-		boolean addTile = m_board.addTile(row, col, color, width);
+		boolean addTile = m_board.addTile(row, col, color, width, height);
 		if (addTile)
 			repaint();
 	}
@@ -72,13 +75,13 @@ class Display extends JPanel implements MouseListener {
 					break;
 				}
 				
-				//int tileHeight = tile.m_height;
+				int tileHeight = tile.m_height;
 				int tileWidth = tile.m_width;
 				int tileCol = tile.m_col;
 					
 				int tileX = tileCol * Board.Tile.WIDTH;
 				int tileY = tileRow * Board.Tile.HEIGHT;
-				g.fillRect(tileX, tileY, Board.Tile.WIDTH * tileWidth, Board.Tile.HEIGHT /** tileHeight*/);
+				g.fillRect(tileX, tileY, Board.Tile.WIDTH * tileWidth, Board.Tile.HEIGHT * tileHeight);
 				
 				// draw row, col label string
 				g.setColor(Color.BLACK);
@@ -134,22 +137,22 @@ class Display extends JPanel implements MouseListener {
 			return null;
 		}
 		
-		private boolean addTile(int tileRow, int tileCol, Palette.FillColor color, int width) {
+		private boolean addTile(int tileRow, int tileCol, Palette.FillColor color, int width, int height) {
 			// check if possible to insert tile
-			if (tileRow + 1/*height*/ > ROWS || tileCol + width > COLS)
+			if (tileRow + height > ROWS || tileCol + width > COLS)
 				return false;
 			
 			// check if another tile exists in region
-			for (int r = tileRow; r < tileRow + 1/*h*/; r++) {
+			for (int r = tileRow; r < tileRow + height; r++) {
 				for (int c = tileCol; c < tileCol + width; c++) {
 					if (m_tileMap[r][c] != '0')
 						return false;
 				}
 			}
 			
-			boolean added = m_tiles.get(tileRow).add(new Board.Tile(tileCol, color, width));
+			boolean added = m_tiles.get(tileRow).add(new Board.Tile(tileCol, color, width, height));
 			if (added) {
-				for (int r = tileRow; r < tileRow + 1/*h*/; r++) {
+				for (int r = tileRow; r < tileRow + height; r++) {
 					for (int c = tileCol; c < tileCol + width; c++)
 						m_tileMap[r][c] = '1';
 				}
@@ -164,10 +167,11 @@ class Display extends JPanel implements MouseListener {
 				return false;
 			
 			int width = tile.m_width;
+			int height = tile.m_height;
 			
 			boolean deleted = m_tiles.get(tileRow).remove(tile);
 			if (deleted) {
-				for (int r = tileRow; r < tileRow + 1/*h*/; r++) {
+				for (int r = tileRow; r < tileRow + height; r++) {
 					for (int c = tileCol; c < tileCol + width; c++)
 						m_tileMap[r][c] = '0';
 				}
@@ -183,12 +187,14 @@ class Display extends JPanel implements MouseListener {
 			
 			private Palette.FillColor m_color;
 			private int m_width;
+			private int m_height;
 			private int m_col;
 			
-			private Tile(int col, Palette.FillColor color, int width) {
+			private Tile(int col, Palette.FillColor color, int width, int height) {
 				m_col = col;
 				m_color = color;
 				m_width = width;
+				m_height = height;
 			}
 		}
 	}
