@@ -3,9 +3,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -28,6 +33,80 @@ class Display extends JPanel implements MouseListener {
 		m_widthBox = widthBox;
 		m_heightBox = heightBox;
 		repaint();
+	}
+	
+	public void exportMap() {
+		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		
+		int saveState = fc.showSaveDialog(this);
+		if (saveState == JFileChooser.ERROR_OPTION)
+			JOptionPane.showMessageDialog(this, "There was an error in exporting map.");
+		if (saveState == JFileChooser.CANCEL_OPTION)
+			return;
+		
+		File f = fc.getSelectedFile();
+		PrintWriter outputStream;
+		try {
+			outputStream = new PrintWriter(f);
+			StringBuilder output = new StringBuilder();
+			boolean gotFirstTile = false;
+			
+			for (int row = 0; row < Board.ROWS; row++) {
+				for (Board.Tile tile : m_board.getTilesAtRow(row)) {
+					Integer r = row;
+					Integer c = tile.m_col;
+					Integer w = tile.m_width;
+					Integer h = tile.m_height;
+					Character v;
+					switch (tile.m_color) {
+					case GREEN:
+						v = 'p';
+						break;
+					case RED:
+						v = 'w';
+						break;
+					default:
+						v = 's';
+					}
+					
+					if (!gotFirstTile)
+						gotFirstTile = true;
+					else
+						output.append('\n');
+					
+					output.append(v.toString());
+					output.append(",");
+					output.append(r.toString());
+					output.append(",");
+					output.append(c.toString());
+					output.append(",");
+					output.append(w.toString());
+					output.append(",");
+					output.append(h.toString());
+					output.append(",");
+				}
+			}
+			
+			boolean firstLine = true;
+			Scanner s = new Scanner(output.toString());
+			while (s.hasNextLine()) {
+				if (firstLine)
+					firstLine = false;
+				else
+					outputStream.write('\n');
+				String in = s.nextLine();
+				outputStream.write(in);
+			}
+			
+			s.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "File not found exception");
+			return;
+		}
+		
+		outputStream.close();
 	}
 	
 	private void doClickSquare(int row, int col) {
