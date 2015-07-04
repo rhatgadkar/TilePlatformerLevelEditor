@@ -107,42 +107,73 @@ class Display extends JPanel implements MouseListener {
 		public final static int COLS = Display.WIDTH / Board.Tile.WIDTH;
 		
 		private ArrayList< LinkedList<Tile> > m_tiles;
+		private char[][] m_tileMap;
 		
 		private Board() {
 			m_tiles = new ArrayList< LinkedList<Tile> >(ROWS);
 			for (int r = 0; r < ROWS; r++)
 				m_tiles.add(new LinkedList<Tile>());
+			
+			m_tileMap = new char[ROWS][COLS];
+			for (int r = 0; r < ROWS; r++) {
+				for (int c = 0; c < COLS; c++)
+					m_tileMap[r][c] = '0';
+			}
 		}
 		
 		private LinkedList<Tile> getTilesAtRow(int r) {
 			return m_tiles.get(r);
 		}
 		
-		private Tile findTile(int r, int c) {
-			for (Tile tile : m_tiles.get(r)) {
-				if (tile.m_col == c)
+		private Tile findTile(int tileRow, int tileCol) {
+			for (Tile tile : m_tiles.get(tileRow)) {
+				if (tile.m_col == tileCol)
 					return tile;
 			}
 			
 			return null;
 		}
 		
-		private boolean addTile(int r, int c, Palette.FillColor color, int width) {
-			// check if another tile exists in region
-			Tile tile = findTile(r, c);
-			if (tile != null)
+		private boolean addTile(int tileRow, int tileCol, Palette.FillColor color, int width) {
+			// check if possible to insert tile
+			if (tileRow + 1/*height*/ > ROWS || tileCol + width > COLS)
 				return false;
 			
-			m_tiles.get(r).add(new Board.Tile(c, color, width));
-			return true;
+			// check if another tile exists in region
+			for (int r = tileRow; r < tileRow + 1/*h*/; r++) {
+				for (int c = tileCol; c < tileCol + width; c++) {
+					if (m_tileMap[r][c] != '0')
+						return false;
+				}
+			}
+			
+			boolean added = m_tiles.get(tileRow).add(new Board.Tile(tileCol, color, width));
+			if (added) {
+				for (int r = tileRow; r < tileRow + 1/*h*/; r++) {
+					for (int c = tileCol; c < tileCol + width; c++)
+						m_tileMap[r][c] = '1';
+				}
+			}
+			
+			return added;
 		}
 		
-		private boolean deleteTile(int r, int c) {
-			Tile tile = findTile(r, c);
+		private boolean deleteTile(int tileRow, int tileCol) {
+			Tile tile = findTile(tileRow, tileCol);
 			if (tile == null)
 				return false;
 			
-			return m_tiles.get(r).remove(tile);
+			int width = tile.m_width;
+			
+			boolean deleted = m_tiles.get(tileRow).remove(tile);
+			if (deleted) {
+				for (int r = tileRow; r < tileRow + 1/*h*/; r++) {
+					for (int c = tileCol; c < tileCol + width; c++)
+						m_tileMap[r][c] = '0';
+				}
+			}
+			
+			return deleted;
 		}
 		
 		final class Tile {
