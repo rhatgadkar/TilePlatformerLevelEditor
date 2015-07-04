@@ -39,13 +39,27 @@ class Display extends JPanel implements MouseListener {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		
-		int saveState = fc.showSaveDialog(this);
-		if (saveState == JFileChooser.ERROR_OPTION)
-			JOptionPane.showMessageDialog(this, "There was an error in exporting map.");
-		if (saveState == JFileChooser.CANCEL_OPTION)
-			return;
+		File f;
+		do {
+			int saveState = fc.showSaveDialog(this);
+			if (saveState == JFileChooser.ERROR_OPTION) {
+				JOptionPane.showMessageDialog(this, "There was an error in exporting map.");
+				return;
+			}
+			else if (saveState == JFileChooser.CANCEL_OPTION)
+				return;
+			else
+				f = fc.getSelectedFile();
+			
+			if (f.exists() && !f.isDirectory())
+				JOptionPane.showMessageDialog(this, "File already exists. Choose a different name.");
+		} while (f.exists() && !f.isDirectory());
 		
-		File f = fc.getSelectedFile();
+//		File f = fc.getSelectedFile();
+//		while (f.exists() && !f.isDirectory()) {
+//			
+//		}
+		
 		PrintWriter outputStream;
 		try {
 			outputStream = new PrintWriter(f);
