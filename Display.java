@@ -6,6 +6,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 class Display extends JPanel implements MouseListener {
@@ -37,6 +38,8 @@ class Display extends JPanel implements MouseListener {
 		boolean addTile = m_board.addTile(row, col, color, width, height);
 		if (addTile)
 			repaint();
+		else
+			JOptionPane.showMessageDialog(this, "Cannot add tile here.");
 	}
 	
 	private void doRightClickSquare(int row, int col) {
