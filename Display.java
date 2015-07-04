@@ -108,11 +108,6 @@ class Display extends JPanel implements MouseListener {
 		}
 		
 		private boolean fillTile(int r, int c) {
-			if (r >= Board.ROWS || r < 0)
-				return false;
-			if (c >= Board.COLS || c < 0)
-				return false;
-			
 			if (m_tiles[r][c].m_fill) // only fill if not already filled
 				return false;
 			
@@ -123,20 +118,10 @@ class Display extends JPanel implements MouseListener {
 		}
 		
 		private Palette.FillColor getTileColor(int r, int c) {
-			if (r >= Board.ROWS || r < 0)
-				return null;
-			if (c >= Board.COLS || c < 0)
-				return null;
-			
-			return m_tiles[r][c].getColor();
+			return m_tiles[r][c].m_color;
 		}
 		
 		private boolean emptyTile(int r, int c) {
-			if (r >= Board.ROWS || r < 0)
-				return false;
-			if (c >= Board.COLS || c < 0)
-				return false;
-			
 			if (!m_tiles[r][c].m_fill) // only empty if not already empty
 				return false;
 			
@@ -146,11 +131,6 @@ class Display extends JPanel implements MouseListener {
 		}
 		
 		private boolean isFilled(int r, int c) {
-			if (r >= Board.ROWS || r < 0)
-				return false;
-			if (c >= Board.COLS || c < 0)
-				return false;
-			
 			if (m_tiles[r][c].m_fill)
 				return true;
 			
@@ -159,16 +139,12 @@ class Display extends JPanel implements MouseListener {
 		
 		final class Tile {
 			
-			private boolean m_fill;
-			
 			public final static int WIDTH = 32;
 			public final static int HEIGHT = 24;
 			
-			private Palette.FillColor m_color;
+			private boolean m_fill;
 			
-			public Palette.FillColor getColor() {
-				return m_color;
-			}
+			private Palette.FillColor m_color;
 			
 			private Tile(int row, int col) {
 				m_fill = false;
