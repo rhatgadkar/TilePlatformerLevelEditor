@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -67,6 +68,12 @@ class Display extends JPanel implements MouseListener {
 					}
 					g.fillRect(c * Board.Tile.WIDTH, r * Board.Tile.HEIGHT, 
 							   Board.Tile.WIDTH, Board.Tile.HEIGHT);
+					
+					// draw row, col
+					g.setColor(Color.BLACK);
+					Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
+					g.setFont(font);
+					g.drawString(r + "," + c, c * Board.Tile.WIDTH + 1, r * Board.Tile.HEIGHT + (Board.Tile.HEIGHT / 2));
 				}
 			}
 		}
