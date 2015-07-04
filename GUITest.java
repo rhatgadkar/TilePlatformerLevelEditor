@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 // make a 640x480 grid with empty squares. Fill colors in square when clicked on.
@@ -25,10 +26,14 @@ public class GUITest extends JPanel {
 		WidthBox widthBox = new WidthBox();
 		Display display = new Display(palette, widthBox);
 		
+		JLabel widthLabel = new JLabel("Width:");
+		
 		display.setBounds(0, 0, Display.WIDTH, Display.HEIGHT);
 		palette.getComboBox().setBounds(660, 100, 100, 50);
-		widthBox.getComboBox().setBounds(660, 300, 50, 50);
+		widthBox.getComboBox().setBounds(660, 200, 50, 50);
+		widthLabel.setBounds(660, 170, 50, 30);
 		
+		add(widthLabel);
 		add(widthBox.getComboBox());
 		add(palette.getComboBox());
 		add(display);
