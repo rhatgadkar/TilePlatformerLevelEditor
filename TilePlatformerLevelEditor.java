@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 // make a 640x480 grid with empty squares. Fill colors in square when clicked on.
 // TILE_WIDTH = 32  TILE_HEIGHT = 24
@@ -30,6 +31,11 @@ public class TilePlatformerLevelEditor extends JPanel {
 		HeightBox heightBox = new HeightBox();
 		Display display = new Display(palette, widthBox, heightBox);
 		
+		display.setPreferredSize(new Dimension(Display.WIDTH, Display.HEIGHT));
+		JScrollPane displayScroller = new JScrollPane(display);
+		display.setAutoscrolls(true);
+		displayScroller.setPreferredSize(new Dimension(640, 500));
+		
 		JLabel widthLabel = new JLabel("Width:");
 		JLabel heightLabel = new JLabel("Height:");
 		
@@ -40,7 +46,7 @@ public class TilePlatformerLevelEditor extends JPanel {
 			}
 		});
 		
-		display.setBounds(0, 0, Display.WIDTH, Display.HEIGHT);
+		displayScroller.setBounds(0, 0, 640, 500);
 		palette.getComboBox().setBounds(660, 100, 100, 50);
 		widthBox.getComboBox().setBounds(660, 200, 50, 50);
 		widthLabel.setBounds(660, 170, 50, 30);
@@ -48,13 +54,13 @@ public class TilePlatformerLevelEditor extends JPanel {
 		heightLabel.setBounds(660, 270, 60, 30);
 		exportButton.setBounds(660, 400, 100, 50);
 		
+		add(displayScroller);
 		add(exportButton);
 		add(heightLabel);
 		add(heightBox.getComboBox());
 		add(widthLabel);
 		add(widthBox.getComboBox());
 		add(palette.getComboBox());
-		add(display);
 	}
 
 	public static void main(String[] args) {

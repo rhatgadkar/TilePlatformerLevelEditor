@@ -18,7 +18,7 @@ class Display extends JPanel implements MouseListener {
 		
 	private static final long serialVersionUID = 1L;
 	
-	public final static int WIDTH = 640;
+	public final static int WIDTH = 1280;
 	public final static int HEIGHT = 480;
 	
 	private Board m_board;
