@@ -35,6 +35,7 @@ public class TilePlatformerLevelEditor extends JPanel {
 		JScrollPane displayScroller = new JScrollPane(display);
 		display.setAutoscrolls(true);
 		displayScroller.setPreferredSize(new Dimension(640, 500));
+		displayScroller.getHorizontalScrollBar().setUnitIncrement(Display.Board.Tile.WIDTH);
 		
 		JLabel widthLabel = new JLabel("Width:");
 		JLabel heightLabel = new JLabel("Height:");
